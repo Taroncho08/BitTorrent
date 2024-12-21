@@ -1,16 +1,23 @@
-#include "Parse.cpp"
+// #include "Parse.hpp"
+// #include "BitTorrent.hpp"
+#include "TorrentFile.hpp"
 #include <fstream>
 #include <sstream>
 
 int main() {
 
-    std::ifstream file("debian-12.8.0-amd64-netinst.iso.torrent");
+    std::ifstream file("Stalker.torrent");
     
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     
     Bencode_Parser parser;
-    BencodeValue val = parser.parse(content);
+    auto val = parser.parse(content);
 
-    printBencodeValue(val);
+    TorrentFileBuilder builder;
+
+    auto fil = builder.build(val);
+
+    std::cout << "ng";
+    
 
 }

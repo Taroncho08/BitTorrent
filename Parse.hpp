@@ -6,13 +6,38 @@
 
 struct BencodeValue;
 
-using BencodeVariant = std::variant<int, std::string, std::vector<BencodeValue>, std::unordered_map<std::string, BencodeValue>>;
+using BencodeVariant = std::variant<long, std::string, std::vector<BencodeValue>, std::unordered_map<std::string, BencodeValue>>;
 
 struct BencodeValue : public BencodeVariant
 {
     using BencodeVariant::BencodeVariant;
 };
 
+void printBencodeValue(const BencodeValue& value, int indent = 0) {
+    std::string indentation(indent, ' ');
+
+    std::visit([&](const auto& v) {
+        using T = std::decay_t<decltype(v)>;
+        if constexpr (std::is_same_v<T, long>) {
+            std::cout << indentation << v << '\n';
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            std::cout << indentation << '"' << v << '"' << '\n';
+        } else if constexpr (std::is_same_v<T, std::vector<BencodeValue>>) {
+            std::cout << indentation << "[\n";
+            for (const auto& item : v) {
+                printBencodeValue(item, indent + 2); 
+            }
+            std::cout << indentation << "]\n";
+        } else if constexpr (std::is_same_v<T, std::unordered_map<std::string, BencodeValue>>) {
+            std::cout << indentation << "{\n";
+            for (const auto& [key, val] : v) {
+                std::cout << indentation << "  \"" << key << "\": ";
+                printBencodeValue(val, indent + 2);
+            }
+            std::cout << indentation << "}\n";
+        }
+    }, value);
+}
 
 class Bencode_Parser {
 public:
@@ -33,14 +58,14 @@ private:
         throw std::runtime_error("Wrong format of file");
     }
 
-    int parseInt(const std::string input) {
+    long parseInt(const std::string input) {
         ++pos;
         std::string str;
         while (input[pos] != 'e') {
             str += input[pos++];
         }
         ++pos;
-        return std::stoi(str);
+        return std::stol(str);
     }
 
     std::vector<BencodeValue> parseList(const std::string input) {
@@ -51,6 +76,7 @@ private:
             vec.push_back(parseValue(input));
         }
 
+        ++pos;
         return vec;
     }
 
@@ -64,6 +90,8 @@ private:
 
             mp[key] = value;
         }
+
+        ++pos;
         return mp;
     }
 
@@ -77,7 +105,9 @@ private:
         ++pos;
         std::string result;
 
-        for (int i = 0; i < std::stoi(lenght); ++i) {
+        int len = std::stoi(lenght);
+
+        for (int i = 0; i < len; ++i) {
             result += input[pos++];
         }
 
@@ -87,29 +117,3 @@ private:
 private:
     std::size_t pos;
 };
-
-void printBencodeValue(const BencodeValue& value, int indent = 0) {
-    std::string indentation(indent, ' ');
-
-    std::visit([&](const auto& v) {
-        using T = std::decay_t<decltype(v)>;
-        if constexpr (std::is_same_v<T, int>) {
-            std::cout << indentation << v << '\n';
-        } else if constexpr (std::is_same_v<T, std::string>) {
-            std::cout << indentation << '"' << v << '"' << '\n';
-        } else if constexpr (std::is_same_v<T, std::vector<BencodeValue>>) {
-            std::cout << indentation << "[\n";
-            for (const auto& item : v) {
-                printBencodeValue(item, indent + 2); 
-            }
-            std::cout << indentation << "]\n";
-        } else if constexpr (std::is_same_v<T, std::unordered_map<std::string, BencodeValue>>) {
-            std::cout << indentation << "{\n";
-            for (const auto& [key, val] : v) {
-                std::cout << indentation << "  \"" << key << "\": ";
-                printBencodeValue(val, indent + 2);
-            }
-            std::cout << indentation << "}\n";
-        }
-    }, value);
-}
