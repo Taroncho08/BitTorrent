@@ -6,7 +6,7 @@
 
 int main() {
 
-    std::ifstream file("Stalker.torrent");
+    std::ifstream file("/home/taron/Desktop/torrent_files/Stalker.torrent");
     
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     

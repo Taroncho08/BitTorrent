@@ -134,31 +134,37 @@ public:
         torrent_file.setName(std::get<std::string>(info["name"]));
         torrent_file.setPieceLength(std::get<long>(info["piece length"]));
 
-        std::vector<FileItem> tmp_file_list;
+        
         if (info.count("files")) {
             torrent_file.setNameOfDirectory(std::get<std::string>(info["name"]) + '/');
             auto file_list = std::get<std::vector<BencodeValue>>(info["files"]);
 
-            for (auto &i : file_list) {
-                FileItem tmp;
-
-                std::string path;
-                for (auto &j : std::get<std::vector<BencodeValue>>(std::get<std::unordered_map<std::string, BencodeValue>>(i)["path"])) {
-                    path += std::get<std::string>(j) += "/";
-                }
-
-                tmp.setPath(path);
-                tmp.setLength(std::get<long>(std::get<std::unordered_map<std::string, BencodeValue>>(i)["length"]));
-
-                tmp_file_list.push_back(tmp);
-
-            }
-
-            torrent_file.setFiles(tmp_file_list);
+            torrent_file.setFiles(getAllFiles(file_list));
 
         }
 
         return torrent_file;
+    }
+
+    std::vector<FileItem> getAllFiles(const std::vector<BencodeValue>& file_list) {
+        std::vector<FileItem> tmp_file_list;
+        for (auto &i : file_list) {
+            FileItem tmp;
+
+            std::string path;
+            for (auto &j : std::get<std::vector<BencodeValue>>(std::get<std::unordered_map<std::string, BencodeValue>>(i).at("path"))) {
+                path += std::get<std::string>(j);
+                path += '/';
+            }
+
+            tmp.setPath(path);
+            tmp.setLength(std::get<long>(std::get<std::unordered_map<std::string, BencodeValue>>(i).at("length")));
+
+            tmp_file_list.push_back(tmp);
+
+        }
+
+        return tmp_file_list;
     }
 private:
     
