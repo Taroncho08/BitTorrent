@@ -1,43 +1,11 @@
+#pragma once
 #include <iostream>
 #include <variant>
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "BencodeValue.hpp"
 
-struct BencodeValue;
-
-using BencodeVariant = std::variant<long, std::string, std::vector<BencodeValue>, std::unordered_map<std::string, BencodeValue>>;
-
-struct BencodeValue : public BencodeVariant
-{
-    using BencodeVariant::BencodeVariant;
-};
-
-void printBencodeValue(const BencodeValue& value, int indent = 0) {
-    std::string indentation(indent, ' ');
-
-    std::visit([&](const auto& v) {
-        using T = std::decay_t<decltype(v)>;
-        if constexpr (std::is_same_v<T, long>) {
-            std::cout << indentation << v << '\n';
-        } else if constexpr (std::is_same_v<T, std::string>) {
-            std::cout << indentation << '"' << v << '"' << '\n';
-        } else if constexpr (std::is_same_v<T, std::vector<BencodeValue>>) {
-            std::cout << indentation << "[\n";
-            for (const auto& item : v) {
-                printBencodeValue(item, indent + 2); 
-            }
-            std::cout << indentation << "]\n";
-        } else if constexpr (std::is_same_v<T, std::unordered_map<std::string, BencodeValue>>) {
-            std::cout << indentation << "{\n";
-            for (const auto& [key, val] : v) {
-                std::cout << indentation << "  \"" << key << "\": ";
-                printBencodeValue(val, indent + 2);
-            }
-            std::cout << indentation << "}\n";
-        }
-    }, value);
-}
 
 class Bencode_Parser {
 public:
@@ -58,7 +26,7 @@ private:
         throw std::runtime_error("Wrong format of file");
     }
 
-    long parseInt(const std::string input) {
+    int64_t parseInt(const std::string input) {
         ++pos;
         std::string str;
         while (input[pos] != 'e') {
