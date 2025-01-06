@@ -12,7 +12,8 @@ public:
 
         torrent_file.setAnnounce(std::get<std::string>(dict["announce"]));
 
-        hash_info_calc.getInfoHash(parsed);
+        torrent_file.setInfoHash(hash_info_calc.getInfoHash(parsed));
+        torrent_file.setUrlSafeInfoHash(hash_info_calc.getUrlSafeInfoHash(parsed));
         
         if (dict.count("announce_list")) {
             auto tmp_list = std::get<std::vector<BencodeValue>>(dict["announce_list"]);

@@ -1,7 +1,5 @@
-#pragma once
 #include "Parse.hpp"
 #include "BitTorrent.hpp"
-#define ASIO_STANDALONE
 #include "TorrentFile.hpp"
 #include <fstream>
 #include <sstream>
@@ -46,7 +44,7 @@ int main() {
 
     InfoHashCalculator calc;
 
-    std::cout << calc.getInfoHash(parser.parse(content));
+    std::cout << calc.getUrlSafeInfoHash(parser.parse(content));
     
 
 }

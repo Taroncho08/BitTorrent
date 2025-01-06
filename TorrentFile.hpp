@@ -64,7 +64,10 @@ public:
     void setPieceLength(int64_t value) { piece_length = value; }
 
     void setInfoHash(const std::string& hash) { info_hash = hash; }
-    const std::string& getInfoHash() { return info_hash; }
+    const std::string& getInfoHash() const { return info_hash; }
+
+    void setUrlSafeInfoHash(const std::string& hash) { url_safe_info_hash = hash; }
+    const std::string& getUrlSafeInfoHash() const { return url_safe_info_hash; }
 
 
 private:
@@ -83,6 +86,7 @@ private:
     int64_t piece_length;
 
     std::string info_hash;
+    std::string url_safe_info_hash;
 
 };
 

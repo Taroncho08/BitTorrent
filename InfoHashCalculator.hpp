@@ -13,6 +13,12 @@ public:
         auto dict = std::get<std::unordered_map<std::string, BencodeValue>>(parsed);
         return encoder.compute_SHA1(serialize_bencode(std::get<std::unordered_map<std::string, BencodeValue>>(dict["info"])));
     }
+
+    std::string getUrlSafeInfoHash(const BencodeValue& parsed) {
+        auto dict = std::get<std::unordered_map<std::string, BencodeValue>>(parsed);
+        return encoder.urlEncode(encoder.compute_SHA1(serialize_bencode(std::get<std::unordered_map<std::string, BencodeValue>>(dict["info"]))));
+    }
+
 private:   
     std::string serialize_list(std::vector<BencodeValue> list) {
         std::ostringstream oss;
