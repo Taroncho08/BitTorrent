@@ -40,9 +40,9 @@ std::vector<BencodeValue> Bencode_Parser::parseList(const std::string& input) {
     return vec;
 }
 
-std::unordered_map<std::string, BencodeValue> Bencode_Parser::parseDict(const std::string& input) {
+std::map<std::string, BencodeValue> Bencode_Parser::parseDict(const std::string& input) {
     ++pos; 
-    std::unordered_map<std::string, BencodeValue> mp;
+    std::map<std::string, BencodeValue> mp;
 
     while (input[pos] != 'e') {
         std::string key = parseString(input);     

@@ -41,6 +41,22 @@ void TorrentFile::setAnnounceList(const std::vector<std::string>& value) {
     announce_list = value;
 }
 
+const std::vector<Tracker>& TorrentFile::getTrackerList() const {
+    return tracker_list;
+}
+
+void TorrentFile::setTrackerList(const std::vector<Tracker>& value) {
+    tracker_list = value;
+}
+
+const Tracker& TorrentFile::getMainTracker() const {
+    return main_tracker;
+}
+
+void TorrentFile::setMainTracker(const Tracker& tracker) {
+    main_tracker = tracker;
+}
+
 const std::string& TorrentFile::getCreatedBy() const {
     return created_by;
 }

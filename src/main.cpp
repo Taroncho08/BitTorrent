@@ -7,6 +7,7 @@
 #include <functional>
 #include <boost/asio.hpp>
 #include "InfoHashCalculator.hpp"
+#include "TrackerConnection.hpp"
 
 void printBencodeValue(const BencodeValue& value, int indent = 0) {
     std::string indentation(indent, ' ');
@@ -36,7 +37,7 @@ void printBencodeValue(const BencodeValue& value, int indent = 0) {
 
 int main() {
 
-    std::ifstream file("/home/taron/Desktop/torrent_files/debian-12.8.0-amd64-netinst.iso.torrent");
+    std::ifstream file("/home/taron/Desktop/torrent_files/debian.torrent");
     
     std::string content{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
     
@@ -44,7 +45,18 @@ int main() {
 
     InfoHashCalculator calc;
 
-    std::cout << calc.getUrlSafeInfoHash(parser.parse(content));
+
+    TorrentFileBuilder builder;
+    TorrentFile tfile = builder.build(parser.parse(content));
+
+    boost::asio::io_context io;
+    TrackerConnection con(io);
+
+    std::cout << tfile.getUrlSafeInfoHash() << std::endl;
+    std::cout << tfile.getMainTracker().buildRequest(tfile) << std::endl;
+    con.sendRequest(tfile);
+    
+    io.run();
     
 
 }

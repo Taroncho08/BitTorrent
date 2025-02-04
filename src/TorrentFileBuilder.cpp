@@ -1,22 +1,27 @@
 #include "TorrentFileBuilder.hpp"
 
 TorrentFile TorrentFileBuilder::build(const BencodeValue& parsed, const std::string& client_id, const std::string& version) {
-    std::unordered_map<std::string, BencodeValue> dict = std::get<std::unordered_map<std::string, BencodeValue>>(parsed);
+    std::map<std::string, BencodeValue> dict = std::get<std::map<std::string, BencodeValue>>(parsed);
 
     TorrentFile torrent_file;
 
-    torrent_file.setAnnounce(std::get<std::string>(dict["announce"]));
+    torrent_file.setAnnounce(std::get<std::string>(dict.at("announce")));
+    torrent_file.setMainTracker(Tracker(torrent_file.getAnnounce()));
+
     torrent_file.setInfoHash(hash_info_calc.getInfoHash(parsed));
     torrent_file.setUrlSafeInfoHash(hash_info_calc.getUrlSafeInfoHash(parsed));
     torrent_file.setPeerId(generatePeerId(client_id, version));
 
     if (dict.count("announce_list")) {
         auto tmp_list = std::get<std::vector<BencodeValue>>(dict["announce_list"]);
-        std::vector<std::string> tmp_vec;
+        std::vector<std::string> tmp_vec { torrent_file.getMainTracker().getAddress() };
+        std::vector<Tracker> tmp_tracker_list { torrent_file.getMainTracker() };
         for (auto& i : tmp_list) {
             tmp_vec.push_back(std::get<std::string>(i));
+            tmp_tracker_list.push_back(Tracker(std::get<std::string>(i)));
         }
         torrent_file.setAnnounceList(tmp_vec);
+        torrent_file.setTrackerList(tmp_tracker_list);
     }
 
     if (dict.count("creation date")) {
@@ -35,7 +40,7 @@ TorrentFile TorrentFileBuilder::build(const BencodeValue& parsed, const std::str
         torrent_file.setEncoding(std::get<std::string>(dict["encoding"]));
     }
 
-    std::unordered_map<std::string, BencodeValue> info = std::get<std::unordered_map<std::string, BencodeValue>>(dict["info"]);
+    std::map<std::string, BencodeValue> info = std::get<std::map<std::string, BencodeValue>>(dict["info"]);
     torrent_file.setName(std::get<std::string>(info["name"]));
     torrent_file.setPieceLength(std::get<int64_t>(info["piece length"]));
 
@@ -54,13 +59,13 @@ std::vector<FileItem> TorrentFileBuilder::getAllFiles(const std::vector<BencodeV
         FileItem tmp;
         std::string path;
 
-        for (auto& j : std::get<std::vector<BencodeValue>>(std::get<std::unordered_map<std::string, BencodeValue>>(i).at("path"))) {
+        for (auto& j : std::get<std::vector<BencodeValue>>(std::get<std::map<std::string, BencodeValue>>(i).at("path"))) {
             path += std::get<std::string>(j);
             path += '/';
         }
 
         tmp.setPath(path);
-        tmp.setLength(std::get<int64_t>(std::get<std::unordered_map<std::string, BencodeValue>>(i).at("length")));
+        tmp.setLength(std::get<int64_t>(std::get<std::map<std::string, BencodeValue>>(i).at("length")));
         tmp_file_list.push_back(tmp);
     }
     return tmp_file_list;

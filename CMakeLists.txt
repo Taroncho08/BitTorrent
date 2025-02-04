@@ -12,6 +12,7 @@ set(SOURCES
     src/TorrentFile.cpp
     src/TorrentFileBuilder.cpp
     src/Tracker.cpp
+    src/TrackerConnection.cpp
 )
 
 set(HEADERS
@@ -24,6 +25,7 @@ set(HEADERS
     include/TorrentFile.hpp
     include/TorrentFileBuilder.hpp
     include/Tracker.hpp
+    include/TrackerConnection.hpp
 )
 
 include_directories(include)

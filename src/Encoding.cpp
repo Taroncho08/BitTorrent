@@ -13,11 +13,11 @@ std::string Encoding::urlEncode(const std::string& value) {
     escaped.fill('0');
     escaped << std::hex;
 
-    for (char c : value) {
-        if (isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
+    for (unsigned char c : value) {
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
         } else {
-            escaped << '%' << std::setw(2) << static_cast<int>(static_cast<unsigned char>(c));
+            escaped << '%' << std::setw(2) << int(c);
         }
     }
 

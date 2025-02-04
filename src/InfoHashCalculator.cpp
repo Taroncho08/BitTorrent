@@ -1,14 +1,14 @@
 #include "InfoHashCalculator.hpp"
 
 std::string InfoHashCalculator::getInfoHash(const BencodeValue& parsed) {
-    auto dict = std::get<std::unordered_map<std::string, BencodeValue>>(parsed);
-    auto info_dict = std::get<std::unordered_map<std::string, BencodeValue>>(dict.at("info"));
+    auto dict = std::get<std::map<std::string, BencodeValue>>(parsed);
+    auto info_dict = std::get<std::map<std::string, BencodeValue>>(dict.at("info"));
     return encoder.compute_SHA1(serialize_bencode(info_dict));
 }
 
 std::string InfoHashCalculator::getUrlSafeInfoHash(const BencodeValue& parsed) {
-    auto dict = std::get<std::unordered_map<std::string, BencodeValue>>(parsed);
-    auto info_dict = std::get<std::unordered_map<std::string, BencodeValue>>(dict.at("info"));
+    auto dict = std::get<std::map<std::string, BencodeValue>>(parsed);
+    auto info_dict = std::get<std::map<std::string, BencodeValue>>(dict.at("info"));
     return encoder.urlEncode(encoder.compute_SHA1(serialize_bencode(info_dict)));
 }
 
@@ -22,7 +22,7 @@ std::string InfoHashCalculator::serialize_list(const std::vector<BencodeValue>& 
     return oss.str();
 }
 
-std::string InfoHashCalculator::serialize_dict(const std::unordered_map<std::string, BencodeValue>& dict) {
+std::string InfoHashCalculator::serialize_dict(const std::map<std::string, BencodeValue>& dict) {
     std::ostringstream oss;
     oss << "d";
     for (const auto& [key, value] : dict) {
@@ -43,8 +43,8 @@ std::string InfoHashCalculator::serialize_bencode(const BencodeValue& value) {
         oss << tmp.size() << ":" << tmp;
     } else if (std::holds_alternative<std::vector<BencodeValue>>(value)) {
         oss << serialize_list(std::get<std::vector<BencodeValue>>(value));
-    } else if (std::holds_alternative<std::unordered_map<std::string, BencodeValue>>(value)) {
-        oss << serialize_dict(std::get<std::unordered_map<std::string, BencodeValue>>(value));
+    } else if (std::holds_alternative<std::map<std::string, BencodeValue>>(value)) {
+        oss << serialize_dict(std::get<std::map<std::string, BencodeValue>>(value));
     } else {
         throw std::runtime_error("Unsupported Bencode value type");
     }

@@ -15,7 +15,7 @@ private:
     BencodeValue parseValue(const std::string& input);
     int64_t parseInt(const std::string& input);
     std::vector<BencodeValue> parseList(const std::string& input);
-    std::unordered_map<std::string, BencodeValue> parseDict(const std::string& input);
+    std::map<std::string, BencodeValue> parseDict(const std::string& input);
     std::string parseString(const std::string& input);
 
 private:

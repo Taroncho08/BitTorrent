@@ -17,7 +17,7 @@ public:
 
 private:
     std::string serialize_list(const std::vector<BencodeValue>& list);
-    std::string serialize_dict(const std::unordered_map<std::string, BencodeValue>& dict);
+    std::string serialize_dict(const std::map<std::string, BencodeValue>& dict);
     std::string serialize_bencode(const BencodeValue& value);
 
 private:

@@ -2,11 +2,11 @@
 #include <variant>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 struct BencodeValue;
 
-using BencodeVariant = std::variant<int64_t, std::string, std::vector<BencodeValue>, std::unordered_map<std::string, BencodeValue>>;
+using BencodeVariant = std::variant<int64_t, std::string, std::vector<BencodeValue>, std::map<std::string, BencodeValue>>;
 
 struct BencodeValue : public BencodeVariant
 {

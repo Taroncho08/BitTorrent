@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "FileItem.hpp"
+#include "Tracker.hpp"
 
 class TorrentFile {
 public:
@@ -26,6 +27,12 @@ public:
 
     const std::vector<std::string>& getAnnounceList() const;
     void setAnnounceList(const std::vector<std::string>& value);
+
+    const std::vector<Tracker>& getTrackerList() const;
+    void setTrackerList(const std::vector<Tracker>& value);
+
+    const Tracker& getMainTracker() const;
+    void setMainTracker(const Tracker& tracker);
 
     const std::string& getCreatedBy() const;
     void setCreatedBy(const std::string& value);
@@ -62,7 +69,10 @@ public:
 
 private:
     std::string announce;
+    Tracker main_tracker;
     std::vector<std::string> announce_list;
+    std::vector<Tracker> tracker_list;
+
     std::string name;
     std::string created_by;
     int64_t creation_date;
