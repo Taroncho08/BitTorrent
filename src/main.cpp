@@ -24,7 +24,7 @@ void printBencodeValue(const BencodeValue& value, int indent = 0) {
                 printBencodeValue(item, indent + 2); 
             }
             std::cout << indentation << "]\n";
-        } else if constexpr (std::is_same_v<T, std::unordered_map<std::string, BencodeValue>>) {
+        } else if constexpr (std::is_same_v<T, std::map<std::string, BencodeValue>>) {
             std::cout << indentation << "{\n";
             for (const auto& [key, val] : v) {
                 std::cout << indentation << "  \"" << key << "\": ";
@@ -52,9 +52,12 @@ int main() {
     boost::asio::io_context io;
     TrackerConnection con(io);
 
-    std::cout << tfile.getUrlSafeInfoHash() << std::endl;
-    std::cout << tfile.getMainTracker().buildRequest(tfile) << std::endl;
-    con.sendRequest(tfile);
+    // std::cout << tfile.getUrlSafeInfoHash() << std::endl;
+    // std::cout << tfile.getMainTracker().buildRequest(tfile) << std::endl;
+    
+    BencodeValue parsed = con.updatePeerList(tfile);
+
+    printBencodeValue(parsed);
     
     io.run();
     
